@@ -5,6 +5,9 @@ on:
     - cron: "0 2 * * *"
   workflow_dispatch:
 
+env:
+  IMAGE_NAME: pocketbase
+
 jobs:
   check-and-build:
     runs-on: ubuntu-latest
@@ -20,7 +23,7 @@ jobs:
           echo "version=${LATEST}" >> $GITHUB_OUTPUT
 
           CURRENT=""
-          if manifest=$(docker manifest inspect ${{ secrets.DOCKERHUB_USERNAME }}/pocketbase:${LATEST} 2>/dev/null); then
+          if manifest=$(docker manifest inspect ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${LATEST} 2>/dev/null); then
             CURRENT="${LATEST}"
           fi
 
@@ -36,6 +39,9 @@ jobs:
     needs: check-and-build
     if: needs.check-and-build.outputs.changed == 'true'
     runs-on: ubuntu-latest
+
+    permissions:
+      packages: write
 
     steps:
       - name: Checkout
@@ -53,6 +59,13 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
@@ -60,8 +73,10 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/pocketbase:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/pocketbase:${{ needs.check-and-build.outputs.version }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ needs.check-and-build.outputs.version }}
+            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ needs.check-and-build.outputs.version }}
           build-args: |
             PB_VERSION=${{ needs.check-and-build.outputs.version }}
           cache-from: type=gha
