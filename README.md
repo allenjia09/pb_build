@@ -12,7 +12,7 @@
 ## 使用
 
 ```bash
-docker pull allenjia09/pocketbase:latest
+docker pull ghcr.io/allenjia09/pocketbase:latest
 ```
 
 ### docker-compose
@@ -20,7 +20,7 @@ docker pull allenjia09/pocketbase:latest
 ```yaml
 services:
   pocketbase:
-    image: allenjia09/pocketbase:latest
+    image: hcr.io/allenjia09/pocketbase:latestt
     ports:
       - "8090:8090"
     volumes:
@@ -34,7 +34,7 @@ volumes:
 ### 指定版本
 
 ```bash
-docker pull allenjia09/pocketbase:0.23.0
+docker pull hcr.io/allenjia09/pocketbase:0.23.0
 ```
 
 ### 手动构建（指定版本）
