@@ -20,7 +20,7 @@ docker pull ghcr.io/allenjia09/pocketbase:latest
 ```yaml
 services:
   pocketbase:
-    image: hcr.io/allenjia09/pocketbase:latestt
+    image: ghcr.io/allenjia09/pocketbase:latest
     ports:
       - "8090:8090"
     volumes:
@@ -34,7 +34,7 @@ volumes:
 ### 指定版本
 
 ```bash
-docker pull hcr.io/allenjia09/pocketbase:0.23.0
+docker pull ghcr.io/allenjia09/pocketbase:0.23.0
 ```
 
 ### 手动构建（指定版本）
